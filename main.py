@@ -6,7 +6,7 @@ import tensorflow as tf
 app = Flask(__name__)
 
 # Load the TensorFlow Lite model
-interpreter = tf.lite.Interpreter(model_path='your_model.tflite') # DEFINE MODEL HERE
+interpreter = tf.lite.Interpreter(model_path='model/detect.tflite') # DEFINE MODEL HERE
 interpreter.allocate_tensors()
 
 # Get input and output details
