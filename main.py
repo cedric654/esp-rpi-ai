@@ -1,6 +1,7 @@
 from flask import Flask, Response, render_template
 import cv2
 import numpy as np
+import importlib.util
 
 app = Flask(__name__)
 
@@ -8,7 +9,9 @@ app = Flask(__name__)
 pkg = importlib.util.find_spec('tflite_runtime')
 if pkg:
     from tflite_runtime.interpreter import Interpreter
-    
+else:
+    from tensorflow.lite.python.interpreter import Interpreter
+
 interpreter = Interpreter(model_path='model/detect.tflite') # DEFINE MODEL HERE
 interpreter.allocate_tensors()
 
