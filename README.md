@@ -11,20 +11,12 @@ sudo apt-get update
 sudo apt-get dist-upgrade
 ```
 
-### Step 2 : Create a new project folder
-
-Second, create a new folder called the name you want by using the following command. Issue:
-
-```bash
-mkdir FOLDER_NAME
-```
-
 ### Step 2 : Dowload GitHub repository
 
 Next, clone this GitHub repository by usign the following command. The repository contains the scripts we'll use to run TensorFlow Lite, as well as a shell script that will make installing everything easier. Issue:
 
 ```bash
-git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
+git clone https://github.com/cedric654/esp-rpi-ai.git
 ```
 
 ### Step 3 : Install virtualenv
@@ -32,7 +24,7 @@ git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on
 Change directory by issuing:
 
 ```bash
-cd FILE_NAME_YOU_CREATED_BEFORE
+cd esp-rpi-ai
 ```
 
 Install virtualenv by issuing:
@@ -50,7 +42,7 @@ python3 -m venv esp-rpi-ai-env
 Now, you need to issue this command to activate the environment every time you open a new terminal window. You can tell when the environment is active by checking if (esp-ai-env) appears before the path in your command prompt, as shown in the screenshot below.
 
 ```bash
-source tflite1-env/bin/activate
+source esp-rpi-ai-env/bin/activate
 ```
 
 ### Step 4 : Install TensorFlow Lite dependencies, OpenCV and Flask
