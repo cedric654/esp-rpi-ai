@@ -12,7 +12,7 @@ if pkg:
 else:
     from tensorflow.lite.python.interpreter import Interpreter
 
-interpreter = Interpreter(model_path='model/detect.tflite') # DEFINE MODEL HERE
+interpreter = Interpreter(model_path='model/weapons_detection_model_lite/detect.tflite') # DEFINE MODEL HERE
 interpreter.allocate_tensors()
 
 # Get input and output details
@@ -75,4 +75,4 @@ def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=2204, threaded=True)
