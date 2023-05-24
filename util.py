@@ -1,15 +1,3 @@
-"""
-This file has utility functions which are used in the following three files:-
-1. object_detection.py
-2. object_detection_web1.py
-3. object_detection_web2.py
-
-This file is imported in all the above three files.
-
-This code is based on Google-Coral Object Detection example code available at:
-https://github.com/google-coral/examples-camera/tree/master/opencv
-
-"""
 import numpy as np
 from PIL import Image
 import tflite_runtime.interpreter as tflite

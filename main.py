@@ -5,6 +5,13 @@ import importlib.util
 
 app = Flask(__name__)
 
+MODEL_PATH = "model/weapons_detection_model_lite/detect.tflite"
+LABEL_PATH = "model/labelmap.xt"
+min_conf_threshold = 0.5
+resW = 640
+resH = 480
+imW, imH = int(resW), int(resH)
+
 # Load the TensorFlow Lite model
 pkg = importlib.util.find_spec("tflite_runtime")
 if pkg:
@@ -12,9 +19,17 @@ if pkg:
 else:
     from tensorflow.lite.python.interpreter import Interpreter
 
-interpreter = Interpreter(
-    model_path="model/weapons_detection_model_lite/detect.tflite",
-)  # DEFINE MODEL HERE
+# Load the label map
+with open(LABEL_PATH, "r") as f:
+    labels = [line.strip() for line in f.readlines()]
+
+# Have to do a weird fix for label map if using the COCO "starter model" from
+# https://www.tensorflow.org/lite/models/object_detection/overview
+# First label is '???', which has to be removed.
+if labels[0] == "???":
+    del labels[0]
+
+interpreter = (Interpreter(MODEL_PATH),)  # DEFINE MODEL HERE
 interpreter.allocate_tensors()
 
 # Get model details
@@ -40,11 +55,11 @@ else:  # This is a TF1 model
 
 # Configure the camera
 camera = cv2.VideoCapture(0)  # Change the index if using a different camera
-camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, resW)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, resH)
 
 
-def generate_frames():
+def main():
     while True:
         success, frame1 = camera.read()
         if not success:
@@ -88,15 +103,51 @@ def generate_frames():
         ]  # Confidence of detected objects
 
         # Process the output detections
-        for i in range(num_detections):
-            if output_scores[i] > 0.5:  # Change the threshold as needed
-                ymin, xmin, ymax, xmax = output_boxes[i]
-                xmin = int(xmin * frame.shape[1])
-                xmax = int(xmax * frame.shape[1])
-                ymin = int(ymin * frame.shape[0])
-                ymax = int(ymax * frame.shape[0])
+        for i in range(len(scores)):
+            if (scores[i] > min_conf_threshold) and (
+                scores[i] <= 1.0
+            ):  # Change the threshold as needed
+                # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
+                ymin = int(max(1, (boxes[i][0] * imH)))
+                xmin = int(max(1, (boxes[i][1] * imW)))
+                ymax = int(min(imH, (boxes[i][2] * imH)))
+                xmax = int(min(imW, (boxes[i][3] * imW)))
 
-                cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+                cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (10, 255, 0), 2)
+
+                # Draw label
+            object_name = labels[
+                int(classes[i])
+            ]  # Look up object name from "labels" array using class index
+            label = "%s: %d%%" % (
+                object_name,
+                int(scores[i] * 100),
+            )  # Example: 'person: 72%'
+            labelSize, baseLine = cv2.getTextSize(
+                label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2
+            )  # Get font size
+            label_ymin = max(
+                ymin, labelSize[1] + 10
+            )  # Make sure not to draw label too close to top of window
+            cv2.rectangle(
+                frame,
+                (xmin, label_ymin - labelSize[1] - 10),
+                (xmin + labelSize[0], label_ymin + baseLine - 10),
+                (255, 255, 255),
+                cv2.FILLED,
+            )  # Draw white box to put label text in
+            cv2.putText(
+                frame,
+                label,
+                (xmin, label_ymin - 7),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 0, 0),
+                2,
+            )  # Draw label text
+
+        # All the results have been drawn on the frame, so it's time to display it.
+        cv2.imshow("Object detector", frame)
 
         # Convert the frame to JPEG format
         ret, buffer = cv2.imencode(".jpg", frame)
@@ -114,9 +165,7 @@ def index():
 
 @app.route("/video_feed")
 def video_feed():
-    return Response(
-        generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
-    )
+    return Response(main(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 if __name__ == "__main__":
