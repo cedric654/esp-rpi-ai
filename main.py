@@ -41,7 +41,7 @@ with open(PATH_TO_LABELS, "r") as f:
 if labels[0] == "???":
     del labels[0]
 
-interpreter = (Interpreter(model_path=PATH_TO_CKPT),)  # DEFINE MODEL HERE
+interpreter = Interpreter(model_path=PATH_TO_CKPT)  # DEFINE MODEL HERE
 interpreter.allocate_tensors()
 
 # Get model details
@@ -119,6 +119,7 @@ def main():
             if (scores[i] > min_conf_threshold) and (
                 scores[i] <= 1.0
             ):  # Change the threshold as needed
+                # Get bounding box coordinates and draw box
                 # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
                 ymin = int(max(1, (boxes[i][0] * imH)))
                 xmin = int(max(1, (boxes[i][1] * imW)))
@@ -128,42 +129,39 @@ def main():
                 cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (10, 255, 0), 2)
 
                 # Draw label
-            object_name = labels[
-                int(classes[i])
-            ]  # Look up object name from "labels" array using class index
-            label = "%s: %d%%" % (
-                object_name,
-                int(scores[i] * 100),
-            )  # Example: 'person: 72%'
-            labelSize, baseLine = cv2.getTextSize(
-                label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2
-            )  # Get font size
-            label_ymin = max(
-                ymin, labelSize[1] + 10
-            )  # Make sure not to draw label too close to top of window
-            cv2.rectangle(
-                frame,
-                (xmin, label_ymin - labelSize[1] - 10),
-                (xmin + labelSize[0], label_ymin + baseLine - 10),
-                (255, 255, 255),
-                cv2.FILLED,
-            )  # Draw white box to put label text in
-            cv2.putText(
-                frame,
-                label,
-                (xmin, label_ymin - 7),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                (0, 0, 0),
-                2,
-            )  # Draw label text
-
-        # All the results have been drawn on the frame, so it's time to display it.
-        cv2.imshow("Object detector", frame)
+                object_name = labels[
+                    int(classes[i])
+                ]  # Look up object name from "labels" array using class index
+                label = "%s: %d%%" % (
+                    object_name,
+                    int(scores[i] * 100),
+                )  # Example: 'person: 72%'
+                labelSize, baseLine = cv2.getTextSize(
+                    label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2
+                )  # Get font size
+                label_ymin = max(
+                    ymin, labelSize[1] + 10
+                )  # Make sure not to draw label too close to top of window
+                cv2.rectangle(
+                    frame,
+                    (xmin, label_ymin - labelSize[1] - 10),
+                    (xmin + labelSize[0], label_ymin + baseLine - 10),
+                    (255, 255, 255),
+                    cv2.FILLED,
+                )  # Draw white box to put label text in
+                cv2.putText(
+                    frame,
+                    label,
+                    (xmin, label_ymin - 7),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.7,
+                    (0, 0, 0),
+                    2,
+                )  # Draw label text
 
         # Convert the frame to JPEG format
-        ret, buffer = cv2.imencode(".jpg", frame)
-        frame = buffer.tobytes()
+        ret, jpeg = cv2.imencode(".jpg", frame)
+        frame = jpeg.tobytes()
 
         yield (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
 
@@ -181,4 +179,4 @@ def video_feed():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, threaded=True)
+    app.run(host="0.0.0.0", port=2204, threaded=True)
