@@ -11,8 +11,8 @@ MODEL_NAME = "weapons_detection_model_lite"
 GRAPH_NAME = "detect.tflite"
 LABELMAP_NAME = "labelmap.txt"
 min_conf_threshold = 0.5
-resW = 640
-resH = 480
+resW = 1280
+resH = 720
 imW, imH = int(resW), int(resH)
 
 # Load the TensorFlow Lite model
