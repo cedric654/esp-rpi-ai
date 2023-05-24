@@ -1,12 +1,15 @@
 from flask import Flask, Response, render_template
+import os
 import cv2
 import numpy as np
 import importlib.util
 
 app = Flask(__name__)
 
-MODEL_PATH = "model/weapons_detection_model_lite/detect.tflite"
-LABEL_PATH = "model/labelmap.xt"
+MODEL_DIR = "model/weapons_detection_model_lite"
+MODEL_NAME = "weapons_detection_model_lite"
+GRAPH_NAME = "detect.tflite"
+LABELMAP_NAME = "labelmap.txt"
 min_conf_threshold = 0.5
 resW = 640
 resH = 480
@@ -19,8 +22,17 @@ if pkg:
 else:
     from tensorflow.lite.python.interpreter import Interpreter
 
+# Get path to current working directory
+CWD_PATH = os.getcwd()
+
+# Path to .tflite file, which contains the model that is used for object detection
+PATH_TO_CKPT = os.path.join(CWD_PATH, MODEL_NAME, GRAPH_NAME)
+
+# Path to label map file
+PATH_TO_LABELS = os.path.join(CWD_PATH, MODEL_NAME, LABELMAP_NAME)
+
 # Load the label map
-with open(LABEL_PATH, "r") as f:
+with open(PATH_TO_LABELS, "r") as f:
     labels = [line.strip() for line in f.readlines()]
 
 # Have to do a weird fix for label map if using the COCO "starter model" from
@@ -29,7 +41,7 @@ with open(LABEL_PATH, "r") as f:
 if labels[0] == "???":
     del labels[0]
 
-interpreter = (Interpreter(MODEL_PATH),)  # DEFINE MODEL HERE
+interpreter = (Interpreter(model_path=PATH_TO_CKPT),)  # DEFINE MODEL HERE
 interpreter.allocate_tensors()
 
 # Get model details
