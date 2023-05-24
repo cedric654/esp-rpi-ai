@@ -10,7 +10,7 @@ The code does following:-
 - Using OpenCV, the frame is overlayed with information such as: color coded bounding boxes, information bar to show FPS, Processing durations and an Object Counter.
 - Stream the output window (camera view with overlays) over LAN through FLASK.
 """
-import utils as cm
+import util as cm
 import cv2
 import numpy as np
 from PIL import Image
