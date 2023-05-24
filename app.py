@@ -53,7 +53,7 @@ def generate_frames():
         output_boxes = interpreter.get_tensor(output_details[0]["index"])
         output_classes = interpreter.get_tensor(output_details[1]["index"])
         output_scores = interpreter.get_tensor(output_details[2]["index"])
-        num_detections = int(output_details[3]["index"][0])  # ERROR
+        num_detections = int(output_details[3]["shape"][0])  # ERROR
 
         # Process the output detections
         for i in range(num_detections):
