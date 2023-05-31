@@ -1,75 +1,73 @@
-# Installation guide
+# Épreuve synthèse de programme - Technique de l'informatique (420.BO) - Intelligence artificielle
 
-## Section 1 - Setting up environment
+## Description
 
-### Step 1 : Update Raspberry Pi
+Mon projet est un système de caméra de sécurité intelligente. À l’aide de l’intelligence artificielle, la caméra de sécurité reconnait toutes les armes qu’une personne pourrait posséder, telle qu’un pistolet ou un couteau. Également, il est possible d’accéder à une application mobile et web qui permet de visualiser la caméra en direct.
 
-First, the Raspberry Pi needs to be fully updated. Open a terminal and issue:
+## Installation
+
+### Section 1 - Configuration de l'environnement
+
+#### Étape 1 : Mettre à jour le Raspberry Pi
+
+Tout d'abord, le Raspberry Pi doit être entièrement mis à jour. Ouvrez un terminal et lancer :
 
 ```bash
 sudo apt-get update
 sudo apt-get dist-upgrade
 ```
 
-### Step 2 : Dowload GitHub repository
+#### Étape 2 : Télécharger le référentiel GitHub
 
-Next, clone this GitHub repository by usign the following command. The repository contains the scripts we'll use to run TensorFlow Lite, as well as a shell script that will make installing everything easier. Issue:
+Ensuite, clonez ce référentiel GitHub en utilisant la commande suivante. Le référentiel contient les scripts que nous utiliserons pour exécuter TensorFlow Lite, ainsi qu'un script shell qui facilitera l'installation de tout. Lancer :
 
 ```bash
 git clone https://github.com/cedric654/esp-rpi-ai.git
 ```
 
-### Step 3 : Install virtualenv
+#### Étape 3 : Installer virtualenv
 
-Change directory by issuing:
+Changer de répertoire en lançant :
 
 ```bash
 cd esp-rpi-ai
 ```
 
-Install virtualenv by issuing:
+Installer virtualenv en lançant :
 
 ```bash
 sudo pip3 install virtualenv
 ```
 
-Then, create the "esp-rpi-ai-env" virtual environment by issuing:
+Créer ensuite l'environnement virtuel "esp-rpi-ai-env" en lançant :
 
 ```bash
 python3 -m venv esp-rpi-ai-env
 ```
 
-Now, you need to issue this command to activate the environment every time you open a new terminal window. You can tell when the environment is active by checking if (esp-ai-env) appears before the path in your command prompt, as shown in the screenshot below.
+Maintenant, vous devez émettre cette commande pour activer l'environnement chaque fois que vous ouvrez une nouvelle fenêtre de terminal. Vous pouvez savoir quand l'environnement est actif en vérifiant si (esp-ai-env) apparaît avant le chemin dans votre invite de commande. Lancer :
 
 ```bash
 source esp-rpi-ai-env/bin/activate
 ```
 
-### Step 4 : Install TensorFlow Lite dependencies, OpenCV and Flask
+#### Étape 4 : Installer les dépendances TensorFlow Lite, OpenCV et Flask
 
-To make things easier, a shell script will automatically download and install all the packages and dependencies. Run it by issuing:
+Pour faciliter les choses, un script shell téléchargera et installera automatiquement tous les packages et dépendances. Exécutez-le en lançant :
 
 ```bash
 bash get_pi_requirements.sh
 ```
 
-### Step 5 : Verify if model is correctly configured
+### Section 2 - Exécuter le modèle Tensorflow Lite et le serveur Web
 
-Make sure the model is correctly linked to the main file by issuing :
+#### Étape 1 : Démarrer le serveur
 
-```bash
-nano main.py
-```
+Il est temps de voir le modèle de détection d'objets TFLite en action ! Tout d'abord, libérez de la mémoire et de la puissance de traitement en fermant toutes les applications que vous n'utilisez pas. Assurez-vous également que votre webcam ou Picamera est branchée.
 
-## Section 2 - Run the Tensorflow Lite model and Web server
+Si vous suivez toutes les étapes correctement, il est censé fonctionner sans aucune erreur
 
-### Step 1 : Start server
-
-It's time to see the TFLite object detection model in action! First, free up memory and processing power by closing any applications you aren't using. Also, make sure you have your webcam or Picamera plugged in.
-
-If you follow all steps correctly it's supposed to work without any error
-
-Now it's time, issue this command for make it works :
+Il est maintenant temps d'exécuter cette commande pour que cela fonctionne :
 
 ```bash
 python main.py
