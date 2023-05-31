@@ -1,4 +1,4 @@
-# Épreuve synthèse de programme - Technique de l'informatique (420.BO) - Intelligence artificielle
+# Épreuve synthèse de programme - Technique de l'informatique (420.BO) - Modèle d'intelligence artificielle (RPI)
 
 ## Description
 
